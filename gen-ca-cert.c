@@ -125,6 +125,7 @@ static X509 * cacert_from_priv_key(
 		ASN1_INTEGER_free(serial);
 		goto fail;
 	}
+	ASN1_INTEGER_free(serial);
 
 	if (X509_gmtime_adj(X509_get_notBefore(x), -hoursBefore * SEC_PER_HOUR) == NULL) {
 		err(USER_F_CFPK, 80);
