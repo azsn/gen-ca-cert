@@ -303,7 +303,11 @@ int cacert_from_priv_key_DER(
 			BIO *mem = BIO_new(BIO_s_mem());
 			if (mem != NULL) {
 				ERR_print_errors(mem);
-				BIO_get_mem_data(mem, errStrOut);
+				char *p = NULL;
+				long l = BIO_get_mem_data(mem, &p);
+				*errStrOut = calloc(l + 1, 1);
+				strncpy(*errStrOut, p, l);
+				BIO_free(mem);
 			}
 		}
 	}
