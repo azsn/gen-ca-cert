@@ -177,12 +177,18 @@ static X509 * cacert_from_priv_key(
 		goto fail;
 	}
 
-	char *altName = NULL;
-	asprintf(&altName, "DNS:%s", commonName);
+	// NID_subject_alt_name takes "type:value,type:value,...". CA certs
+	// should have the alt name be the CA's name with the DNS type.
+	const char altPrefix[] = "DNS:";
+	int commonNameLen = strnlen(commonName, 64);
+	char *altName = calloc(commonNameLen + sizeof(altPrefix), 1);
 	if (altName == NULL) {
 		err(USER_F_CFPK, 180);
 		goto fail;
 	}
+	strcat(altName, altPrefix);
+	strncat(altName, commonName, commonNameLen);
+
 	if (!add_ext(x, NID_subject_alt_name, altName)) {
 		err(USER_F_CFPK, 190);
 		free(altName);
